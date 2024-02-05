@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkvideo import tkvideo
 root = tk.Tk()
-root.title("Video Player")
+root.title("Cinefy")
 video_label = tk.Label(root)
 video_label.pack()
 player = None
