@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import tkinter as tk
 from tkinter import filedialog
 import vlc
@@ -35,6 +34,32 @@ class VideoPlayer:
         self.speed_slider.pack(side='bottom')
         self.player.set_hwnd(self.canvas.winfo_id())
         
-        
-=======
->>>>>>> c7bcf8e7640b83bf61afe3acb4638f9a3716f99c
+
+# Methods of the features
+    def load(self):
+        filepath = filedialog.askopenfilename(filetypes=[("Video files", ".mp4;.avi;*.mkv")])
+        self.media = self.vlc_instance.media_new(filepath)
+        self.player.set_media(self.media)
+
+    def play(self):
+        self.player.play()
+        self.update_seeker()
+
+    def pause(self):
+        self.player.pause()
+
+    def stop(self):
+        self.player.stop()
+
+    def set_volume(self, volume):
+        self.player.audio_set_volume(int(volume))
+
+    def set_speed(self, speed):
+        self.player.set_rate(float(speed))
+
+
+
+root = tk.Tk()
+root.title("Cinefy")
+player = VideoPlayer(root)
+root.mainloop()
