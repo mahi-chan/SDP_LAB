@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import tkinter as tk
 from tkinter import filedialog
 import vlc
@@ -35,3 +36,5 @@ class VideoPlayer:
         self.player.set_hwnd(self.canvas.winfo_id())
         
         
+=======
+>>>>>>> c7bcf8e7640b83bf61afe3acb4638f9a3716f99c
