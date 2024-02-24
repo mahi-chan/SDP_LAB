@@ -33,6 +33,10 @@ class VideoPlayer:
         self.volume_slider.pack(side='right')
         self.speed_slider.pack(side='bottom')
         self.subtitle_button.pack(side='left', padx=5, pady=5)
+        self.seek_var = tk.DoubleVar()
+        self.seek_slider = tk.Scale(self.master, variable=self.seek_var, command=self.seek_video)
+        self.seek_slider.pack(side='bottom')
+        self.master.after(1000, self.update_seek_slider)
         self.player.set_hwnd(self.canvas.winfo_id())
         
 
@@ -63,6 +67,16 @@ class VideoPlayer:
         if subtitle_path:
             self.player.video_set_subtitle_file(subtitle_path)
 
+    def update_seek_slider(self):
+        video_length = self.player.get_length() / 1000
+        video_time = self.player.get_time() / 1000
+        self.seek_var.set(video_time / video_length * 100)
+        self.master.after(1000, self.update_seek_slider)
+
+    def seek_video(self, value):
+        video_length = self.player.get_length() / 1000
+        seek_time = float(value) / 100 * video_length
+        self.player.set_time(int(seek_time * 1000))
 
 
 root = tk.Tk()
