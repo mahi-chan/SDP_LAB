@@ -4,7 +4,7 @@ import vlc
 
 
 class VideoPlayer:
-    def _init_(self, master):
+    def __init__(self, master):
         self.master = master
         self.frame = tk.Frame(self.master)
         self.frame.pack()
@@ -21,7 +21,7 @@ class VideoPlayer:
         self.stop_button = tk.Button(self.frame, text="Stop", command=self.stop)
         self.volume_slider = tk.Scale(self.frame, from_=0, to=100, orient='horizontal', command=self.set_volume)
         self.speed_slider = tk.Scale(self.frame, from_=0.5, to=2, resolution=0.1, orient='horizontal', command=self.set_speed)
-
+        self.subtitle_button = tk.Button(self.master, text="Load Subtitles", command=self.load_subtitles)
 
         # widget_packs
 
@@ -32,6 +32,7 @@ class VideoPlayer:
         self.stop_button.pack(side='left', padx=5, pady=5)
         self.volume_slider.pack(side='right')
         self.speed_slider.pack(side='bottom')
+        self.subtitle_button.pack(side='left', padx=5, pady=5)
         self.player.set_hwnd(self.canvas.winfo_id())
         
 
@@ -56,6 +57,11 @@ class VideoPlayer:
 
     def set_speed(self, speed):
         self.player.set_rate(float(speed))
+
+    def load_subtitles(self):
+        subtitle_path = filedialog.askopenfilename(filetypes=[("Subtitle files", "*.srt")])
+        if subtitle_path:
+            self.player.video_set_subtitle_file(subtitle_path)
 
 
 
