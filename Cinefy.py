@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 import vlc
-
+import os
+import random
 
 class VideoPlayer:
     def __init__(self, master):
@@ -22,6 +23,14 @@ class VideoPlayer:
         self.volume_slider = tk.Scale(self.frame, from_=0, to=100, orient='horizontal', command=self.set_volume)
         self.speed_slider = tk.Scale(self.frame, from_=0.5, to=2, resolution=0.1, orient='horizontal', command=self.set_speed)
         self.subtitle_button = tk.Button(self.master, text="Load Subtitles", command=self.load_subtitles)
+        self.show_playlist_button = tk.Button(root, text="Show Playlist", command=self.show_playlist)
+        self.add_to_playlist_button = tk.Button(root, text="Add to Playlist", command=self.add_to_playlist)
+        self.delete_from_playlist_button = tk.Button(root, text="Delete from Playlist",
+                                                     command=self.delete_from_playlist)
+        self.playlist = []
+        self.current_index = 0
+        self.is_shuffled = False
+        self.is_repeating = False
 
         # widget_packs
 
@@ -63,7 +72,34 @@ class VideoPlayer:
         if subtitle_path:
             self.player.video_set_subtitle_file(subtitle_path)
 
+        # Display the current playlist.
 
+    def show_playlist(self):
+
+        print("Playlist:")
+        for i, video in enumerate(self.playlist):
+            print(f"{i + 1}. {os.path.basename(video)}")
+
+        # Add a video to the playlist.
+
+    def add_to_playlist(self):
+
+        file_path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4 *.avi *.mkv")])
+        if file_path:
+            self.playlist.append(file_path)
+            print(f"{os.path.basename(file_path)} added to playlist.")
+
+        # Delete a video from the playlist.
+
+    def delete_from_playlist(self):
+
+        if self.playlist:
+            index_to_delete = int(input("Enter the index of the video to delete: ")) - 1
+            if 0 <= index_to_delete < len(self.playlist):
+                deleted_video = self.playlist.pop(index_to_delete)
+                print(f"{os.path.basename(deleted_video)} removed from playlist.")
+            else:
+                print("Invalid index. Playlist unchanged.")
 
 root = tk.Tk()
 root.title("Cinefy")
