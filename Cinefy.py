@@ -31,6 +31,9 @@ class VideoPlayer:
         self.current_index = 0
         self.is_shuffled = False
         self.is_repeating = False
+        self.shuffle_button = tk.Button(root, text="Shuffle", command=self.shuffle_playlist)
+        self.repeat_button = tk.Button(root, text="Repeat", command=self.toggle_repeat)
+
 
         # widget_packs
 
@@ -42,6 +45,11 @@ class VideoPlayer:
         self.volume_slider.pack(side='right')
         self.speed_slider.pack(side='bottom')
         self.subtitle_button.pack(side='left', padx=5, pady=5)
+        self.shuffle_button.pack()
+        self.repeat_button.pack()
+        self.show_playlist_button.pack()
+        self.add_to_playlist_button.pack()
+        self.delete_from_playlist_button.pack()
         self.player.set_hwnd(self.canvas.winfo_id())
         
 
@@ -100,6 +108,31 @@ class VideoPlayer:
                 print(f"{os.path.basename(deleted_video)} removed from playlist.")
             else:
                 print("Invalid index. Playlist unchanged.")
+
+    def shuffle_playlist(self):
+        if self.playlist:
+            random.shuffle(self.playlist)
+            self.is_shuffled = True
+            self.current_index = 0
+            self.play_current_video()
+
+    def toggle_repeat(self):
+        self.is_repeating = not self.is_repeating
+
+    def play_current_video(self):
+        if self.playlist:
+            media = self.instance.media_new(self.playlist[self.current_index])
+            self.player.set_media(media)
+            self.player.play()
+
+            if self.is_repeating:
+                self.player.event_manager().event_attach(vlc.EventType.MediaPlayerEndReached, self.repeat_video)
+
+    def repeat_video(self, event):
+        if self.is_repeating:
+            self.current_index = (self.current_index + 1) % len(self.playlist)
+            self.play_current_video()
+
 
 root = tk.Tk()
 root.title("Cinefy")
