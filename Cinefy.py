@@ -14,7 +14,7 @@ class VideoPlayer:
         self.media = None
 
         # widgets
-
+    def create_widgets(self):
         self.canvas = tk.Canvas(self.frame, width=640, height=480)
         self.load_button = tk.Button(self.frame, text="Load", command=self.load)
         self.play_button = tk.Button(self.frame, text="Play", command=self.play)
@@ -33,7 +33,11 @@ class VideoPlayer:
         self.is_repeating = False
         self.shuffle_button = tk.Button(root, text="Shuffle", command=self.shuffle_playlist)
         self.repeat_button = tk.Button(root, text="Repeat", command=self.toggle_repeat)
-
+        self.aspect_ratio_label = tk.Label(self.frame, text="Aspect Ratio:")
+        self.aspect_ratio_var = tk.StringVar()
+        self.aspect_ratio_options = ["Original", "16:9", "4:3", "1:1"]
+        self.aspect_ratio_menu = tk.OptionMenu(self.frame, self.aspect_ratio_var, *self.aspect_ratio_options)
+        self.aspect_ratio_var.set("Original")
 
         # widget_packs
 
@@ -50,10 +54,22 @@ class VideoPlayer:
         self.show_playlist_button.pack()
         self.add_to_playlist_button.pack()
         self.delete_from_playlist_button.pack()
+        self.aspect_ratio_label.pack(side='left', padx=5, pady=5)
+        self.aspect_ratio_menu.pack(side='left', padx=5, pady=5)
         self.player.set_hwnd(self.canvas.winfo_id())
+
+       # Keyboard events
         
+    def bind_keyboard_events(self):
+        self.root.bind("<space>", self.toggle_play_pause)
+        self.root.bind("<Left>", self.seek_backward)
+        self.root.bind("<Right>", self.seek_forward)
+        self.root.bind("s", self.stop_video)
+        self.root.bind("<Up>", self.increase_volume)
+        self.root.bind("<Down>", self.decrease_volume)    
 
 # Methods of the features
+        
     def load(self):
         filepath = filedialog.askopenfilename(filetypes=[("Video files", ".mp4;.avi;*.mkv")])
         self.media = self.vlc_instance.media_new(filepath)
@@ -121,18 +137,60 @@ class VideoPlayer:
 
     def play_current_video(self):
         if self.playlist:
-            media = self.instance.media_new(self.playlist[self.current_index])
+            media = self.vlc_instance.media_new(self.playlist[self.current_index])
+            aspect_ratio = self.aspect_ratio_var.get()
+            if aspect_ratio == "16:9":
+                self.player.video_set_aspect_ratio("16:9")
+            elif aspect_ratio == "4:3":
+                self.player.video_set_aspect_ratio("4:3")
+            elif aspect_ratio == "1:1":
+                self.player.video_set_aspect_ratio("1:1")
+            else:
+                self.player.video_set_aspect_ratio(None)
+
             self.player.set_media(media)
             self.player.play()
 
             if self.is_repeating:
                 self.player.event_manager().event_attach(vlc.EventType.MediaPlayerEndReached, self.repeat_video)
-
     def repeat_video(self, event):
         if self.is_repeating:
             self.current_index = (self.current_index + 1) % len(self.playlist)
             self.play_current_video()
 
+    #keyboard seek
+            
+    def seek_backward(self, event):
+        current_time = self.media_player.get_time()
+        new_time = max(current_time - 5000, 0)  
+        self.media_player.set_time(new_time)
+
+    def seek_forward(self, event):
+        current_time = self.media_player.get_time()
+        total_duration = self.media_player.get_length()
+        new_time = min(current_time + 5000, total_duration)  
+        self.media_player.set_time(new_time)
+
+    #keyboard volume
+        
+    def increase_volume(self, event):
+        current_volume = self.media_player.audio_get_volume()
+        new_volume = min(current_volume + 10, 100)  
+        self.media_player.audio_set_volume(new_volume)
+
+    def decrease_volume(self, event):
+        current_volume = self.media_player.audio_get_volume()
+        new_volume = max(current_volume - 10, 0)  
+        self.media_player.audio_set_volume(new_volume)
+
+    #keyboard play/pause
+        
+    def toggle_play_pause(self, event):
+        if self.media_player.is_playing():
+            self.media_player.pause()
+        else:
+            self.media_player.play()
+    
 
 root = tk.Tk()
 root.title("Cinefy")
