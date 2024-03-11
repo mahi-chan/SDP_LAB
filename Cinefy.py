@@ -33,6 +33,11 @@ class VideoPlayer:
         self.is_repeating = False
         self.shuffle_button = tk.Button(root, text="Shuffle", command=self.shuffle_playlist)
         self.repeat_button = tk.Button(root, text="Repeat", command=self.toggle_repeat)
+        self.aspect_ratio_label = tk.Label(self.frame, text="Aspect Ratio:")
+        self.aspect_ratio_var = tk.StringVar()
+        self.aspect_ratio_options = ["Original", "16:9", "4:3", "1:1"]
+        self.aspect_ratio_menu = tk.OptionMenu(self.frame, self.aspect_ratio_var, *self.aspect_ratio_options)
+        self.aspect_ratio_var.set("Original")
 
 
         # widget_packs
@@ -50,6 +55,8 @@ class VideoPlayer:
         self.show_playlist_button.pack()
         self.add_to_playlist_button.pack()
         self.delete_from_playlist_button.pack()
+        self.aspect_ratio_label.pack(side='left', padx=5, pady=5)
+        self.aspect_ratio_menu.pack(side='left', padx=5, pady=5)
         self.player.set_hwnd(self.canvas.winfo_id())
         
 
@@ -121,7 +128,17 @@ class VideoPlayer:
 
     def play_current_video(self):
         if self.playlist:
-            media = self.instance.media_new(self.playlist[self.current_index])
+            media = self.vlc_instance.media_new(self.playlist[self.current_index])
+            aspect_ratio = self.aspect_ratio_var.get()
+            if aspect_ratio == "16:9":
+                self.player.video_set_aspect_ratio("16:9")
+            elif aspect_ratio == "4:3":
+                self.player.video_set_aspect_ratio("4:3")
+            elif aspect_ratio == "1:1":
+                self.player.video_set_aspect_ratio("1:1")
+            else:
+                self.player.video_set_aspect_ratio(None)
+
             self.player.set_media(media)
             self.player.play()
 
