@@ -107,8 +107,6 @@ class VideoPlayer(VideoPlayer):
         self.player.play()
 
     def repeat_video(self, event):
-        self.play_current_video()
-    def repeat_video(self, event):
         if self.is_repeating:
             self.current_index = (self.current_index + 1) % len(self.playlist)
             self.play_current_video()
