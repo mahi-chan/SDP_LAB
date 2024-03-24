@@ -86,21 +86,25 @@ class VideoPlayer(VideoPlayer):
     def play_current_video(self):
         if self.playlist:
             media = self.vlc_instance.media_new(self.playlist[self.current_index])
-            aspect_ratio = self.aspect_ratio_var.get()
-            if aspect_ratio == "16:9":
-                self.player.video_set_aspect_ratio("16:9")
-            elif aspect_ratio == "4:3":
-                self.player.video_set_aspect_ratio("4:3")
-            elif aspect_ratio == "1:1":
-                self.player.video_set_aspect_ratio("1:1")
-            else:
-                self.player.video_set_aspect_ratio(None)
-
-            self.player.set_media(media)
-            self.player.play()
-
+            self.set_aspect_ratio()
+            self.set_media_and_play(media)
             if self.is_repeating:
                 self.player.event_manager().event_attach(vlc.EventType.MediaPlayerEndReached, self.repeat_video)
+
+    def set_aspect_ratio(self):
+        aspect_ratio = self.aspect_ratio_var.get()
+        if aspect_ratio == "16:9":
+            self.player.video_set_aspect_ratio("16:9")
+        elif aspect_ratio == "4:3":
+            self.player.video_set_aspect_ratio("4:3")
+        elif aspect_ratio == "1:1":
+            self.player.video_set_aspect_ratio("1:1")
+        else:
+            self.player.video_set_aspect_ratio(None)
+
+    def set_media_and_play(self, media):
+        self.player.set_media(media)
+        self.player.play()
 
     def repeat_video(self, event):
         if self.is_repeating:
