@@ -4,9 +4,12 @@ from gui import VideoPlayer
 import os
 import random
 
+
 class VideoPlayer(VideoPlayer):
-    def _init_(self,root):
-        super()._init_(root)
+    def __init__(self, root):
+        super().__init__(root)
+
+
     def load(self):
         filepath = filedialog.askopenfilename(filetypes=[("Video files", ".mp4;.avi;*.mkv")])
         self.media = self.vlc_instance.media_new(filepath)
