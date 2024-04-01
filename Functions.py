@@ -36,7 +36,7 @@ class VideoPlayer(VideoPlayer):
 
     def seek_video(self, value):
         video_length = self.player.get_length() / 1000
-        seek_time = float(value) / 100 * video_length
+        seek_time = float(value) * video_length / 100
         self.player.set_time(int(seek_time * 1000))
 
     def load_subtitles(self):
