@@ -2,45 +2,68 @@
 import pytest
 from unittest.mock import MagicMock
 from Functions import VideoPlayer
-import tkinter as tk  # Import tkinter for creating a master instance
+import tkinter as tk
+from unittest.mock import Mock, patch
+
 
 @pytest.fixture
 def mock_video_player():
-    # Create a mock VideoPlayer instance with a valid master (tk.Tk()) instance
-    master = tk.Tk()  # Create a master instance
-    player = VideoPlayer(master)  # Pass the master instance to VideoPlayer
-    player.get_length = MagicMock(return_value=10000)  # Mock get_length
-    player.set_time = MagicMock()  # Mock set_time
+    master = tk.Tk()
+    player = VideoPlayer(master)
+    player.player = MagicMock()
+    player.vlc_instance = MagicMock()
+    player.media = MagicMock()
     return player
 
 
 def test_load(mock_video_player):
-    # Test the load method
-    # You can mock the file dialog or provide a sample file path
-    # and assert that the media is set correctly
-    filepath = "sample_video.mkv"
-    mock_video_player.load()
-    actual_mrl = mock_video_player.media.get_mrl()
-    actual_filename = actual_mrl.split("/")[-1]  # Get the filename part
-    assert actual_filename == filepath
+    with patch('tkinter.filedialog.askopenfilename', return_value='test.mp4'), \
+            patch('vlc.Instance.media_new') as mock_media_new:
+        mock_video_player.vlc_instance.media_new = mock_media_new
+        mock_video_player.load()
+        mock_media_new.assert_called_once_with('test.mp4')
 
 
 def test_add_to_playlist(mock_video_player):
-    # Mock the file dialog to return a video file path
     mock_video_player.add_to_playlist()
-    # Verify that the video was added to the playlist
     assert len(mock_video_player.playlist) == 1
 
-def test_set_speed(mock_video_player):
-    # Test the set_speed method
-    speed = 2  # Example speed value
-    mock_video_player.set_speed(speed)
 
 def test_set_volume(mock_video_player):
-    # Test the set_volume method
-    volume = 0.8  # Example volume value
+    volume = 50
     mock_video_player.set_volume(volume)
-    # Add assertions to check if the volume was set correctly
+    mock_video_player.player.audio_set_volume.assert_called_once_with(int(volume))
+
+
+def test_set_speed(mock_video_player):
+    speed = 1.5
+    mock_video_player.set_speed(speed)
+    mock_video_player.player.set_rate.assert_called_once_with(float(speed))
+
+
+def test_play(mock_video_player):
+    mock_video_player.update_seeker = MagicMock()
+    mock_video_player.play()
+    mock_video_player.player.play.assert_called_once()
+    mock_video_player.update_seeker.assert_called_once()
+
+
+def test_pause(mock_video_player):
+    mock_video_player.pause()
+    mock_video_player.player.pause.assert_called_once()
+
+
+def test_stop(mock_video_player):
+    mock_video_player.stop()
+    mock_video_player.player.stop.assert_called_once()
+
+
+def test_seek_video(mock_video_player):
+    value = 50
+    mock_video_player.player.get_length.return_value = 5000
+    mock_video_player.seek_video(value)
+    mock_video_player.player.set_time.assert_called_once_with(2500)
+
 
 if __name__ == "__main__":
     pytest.main()
