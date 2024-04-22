@@ -105,6 +105,15 @@ def test_set_aspect_ratio(mock_video_player):
     mock_video_player.set_aspect_ratio()
     mock_video_player.player.video_set_aspect_ratio.assert_called_once_with('16:9')
 
+def test_update_seek_slider(mock_video_player):
+    mock_video_player.player.get_length.return_value = 5000
+    mock_video_player.player.get_time.return_value = 2500
+    mock_video_player.seek_var = MagicMock()
+    mock_video_player.master = MagicMock()
+    mock_video_player.update_seek_slider()
+    mock_video_player.seek_var.set.assert_called_once_with(50)
+    mock_video_player.master.after.assert_called_once_with(1000, mock_video_player.update_seek_slider)
+
 
 if __name__ == "__main__":
     pytest.main()
