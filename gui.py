@@ -1,6 +1,6 @@
 import tkinter as tk
 import vlc
-
+import os
 
 class VideoPlayer:
     def __init__(self, master):
@@ -24,8 +24,8 @@ class VideoPlayer:
         self.subtitle_button = tk.Button(self.master, text="Load Subtitles", command=self.load_subtitles)
         self.show_playlist_button = tk.Button(text="Show Playlist", command=self.show_playlist)
         self.add_to_playlist_button = tk.Button(text="Add to Playlist", command=self.add_to_playlist)
-        self.delete_from_playlist_button = tk.Button(text="Delete from Playlist",
-                                                     command=self.delete_from_playlist)
+        #self.delete_from_playlist_button = tk.Button(text="Delete from Playlist",
+        #                                             command=self.delete_from_playlist)
         self.playlist = []
         self.current_index = 0
         self.is_shuffled = False
@@ -52,7 +52,7 @@ class VideoPlayer:
         self.repeat_button.pack()
         self.show_playlist_button.pack()
         self.add_to_playlist_button.pack()
-        self.delete_from_playlist_button.pack()
+        #self.delete_from_playlist_button.pack()
         self.aspect_ratio_label.pack(side='left', padx=5, pady=5)
         self.aspect_ratio_menu.pack(side='left', padx=5, pady=5)
         self.seek_var = tk.DoubleVar()
