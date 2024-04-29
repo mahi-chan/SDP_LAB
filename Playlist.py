@@ -5,7 +5,7 @@ import random
 import vlc
 
 
-class Playlist():
+class Playlist:
 
     def __init__(self):
         self.player = None
@@ -35,7 +35,6 @@ class Playlist():
             selected_index = playlist_listbox.curselection()
             if selected_index:
                 removed_video = self.playlist.pop(selected_index[0])
-                print(f"{os.path.basename(removed_video)} removed from playlist.")
                 playlist_listbox.delete(selected_index)
 
         remove_button = tk.Button(playlist_window, text="Remove Selected Video", command=remove_selected)
@@ -56,9 +55,6 @@ class Playlist():
         file_path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4 *.avi *.mkv")])
         if file_path:
             self.playlist.append(file_path)
-            print(f"{os.path.basename(file_path)} added to playlist.")
-
-        # Delete a video from the playlist.
 
     def shuffle_playlist(self):
         if self.playlist:

@@ -1,6 +1,6 @@
 import tkinter as tk
 import vlc
-import os
+
 
 class VideoPlayer:
     def __init__(self, master):
